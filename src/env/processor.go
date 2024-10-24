@@ -1,7 +1,6 @@
 package env
 
 import (
-	"auto_dev_env/src"
 	"auto_dev_env/src/cmd"
 	"auto_dev_env/src/file"
 	"errors"
@@ -49,15 +48,12 @@ func (p Processor) check() error {
 			path := checkSource.Path
 			fileType := checkSource.Type
 
-			if fileType == src.FILE {
-
-				exist, err := p.FP.Exist(path)
-				if err != nil {
-					return err
-				}
-				if !exist {
-					errorMsg = append(errorMsg, errors.New("检查配置："+name+" 文件不存在，请检查路径"))
-				}
+			exist, err := p.FP.Exist(path)
+			if err != nil {
+				return err
+			}
+			if !exist {
+				errorMsg = append(errorMsg, errors.New("检查配置："+name+" "+string(fileType)+"不存在，请检查路径"))
 			}
 		}
 	}
