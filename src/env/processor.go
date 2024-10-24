@@ -1,8 +1,11 @@
 package env
 
 import (
+	"auto_dev_env/src"
 	"auto_dev_env/src/cmd"
 	"auto_dev_env/src/file"
+	"errors"
+	"log"
 )
 
 // Processor 环境处理器
@@ -33,5 +36,35 @@ func NewEnvProcessor(osName string, cmdProcessor cmd.Processor, fileProcessor fi
 
 // check 检查文件是否齐全
 func (p Processor) check() error {
-	return nil
+
+	var errorMsg []error
+
+	for _, config := range p.Configs {
+		log.Println(config.PrintString())
+
+		for _, checkSource := range config.EnvSourceCheck {
+			log.Println(checkSource.PrintString())
+
+			name := checkSource.Name
+			path := checkSource.Path
+			fileType := checkSource.Type
+
+			if fileType == src.FILE {
+
+				exist, err := p.FP.Exist(path)
+				if err != nil {
+					return err
+				}
+				if !exist {
+					errorMsg = append(errorMsg, errors.New("检查配置："+name+" 文件不存在，请检查路径"))
+				}
+			}
+		}
+	}
+
+	if len(errorMsg) == 0 {
+		return nil
+	}
+
+	return errors.Join(errorMsg...)
 }
