@@ -11,6 +11,30 @@ import (
 type CommonFileProcessor struct {
 }
 
+func (c CommonFileProcessor) ReadFile(path string) ([]byte, error) {
+
+	fs, err := os.Stat(path)
+
+	if os.IsNotExist(err) {
+		return nil, errors.New("path not found --> " + path)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	if fs.IsDir() {
+		return nil, errors.New("path is not a file --> " + path)
+	}
+
+	fileBytes, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	return fileBytes, nil
+}
+
 func (c CommonFileProcessor) Exist(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
@@ -109,7 +133,7 @@ func (c CommonFileProcessor) Copy(sourcePath string, targetPath string, del bool
 		}
 	}
 
-	return false, nil
+	return true, nil
 }
 
 // copyFile 复制单个文件

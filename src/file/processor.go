@@ -11,4 +11,6 @@ type Processor interface {
 	// Copy 复制文件或文件夹
 	// del: 是否同时删除sourcePath文件
 	Copy(sourcePath string, targetPath string, del bool) (bool, error)
+	// ReadFile 读取文件内容
+	ReadFile(path string) ([]byte, error)
 }

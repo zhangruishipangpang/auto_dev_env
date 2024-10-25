@@ -1,0 +1,24 @@
+[
+  {
+    "env_name": "测试maven环境",
+    "env_code": "test_maven",
+    "env_source_path": "D:\\test\\maven",
+    "env_target_path": "D:\\test\\maven2",
+    "del_source": false,
+    "env_source_check": [
+      {
+        "name" : "bin",
+        "type" : "dir",
+        "path" : "$bin"
+      }
+    ],
+    "env_config" : [
+      {
+        "key" : "TEST_MAVEN_HOME",
+        "value" : "$maven\\bin",
+        "cover" : true,
+        "append_path" : false
+      }
+    ]
+  }
+]
