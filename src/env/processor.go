@@ -3,6 +3,8 @@ package env
 import (
 	"auto_dev_env/src/cmd"
 	"auto_dev_env/src/file"
+	"auto_dev_env/src/platform"
+	"auto_dev_env/src/util"
 	"encoding/json"
 	"errors"
 	"log"
@@ -29,7 +31,42 @@ func NewEnvProcessor(osName, configPath string, cmdProcessor cmd.Processor, file
 		panic("fileProcessor is nil")
 	}
 
-	fileBytes, err := fileProcessor.ReadFile(configPath)
+	config := readConfig(configPath, fileProcessor)
+
+	return Processor{
+		OsName:  osName,
+		CP:      cmdProcessor,
+		FP:      fileProcessor,
+		Configs: config,
+	}
+}
+
+// NewEnvProcessorByCurrentOsName 创建一个环境处理器
+func NewEnvProcessorByCurrentOsName(configPath string) Processor {
+
+	osName := util.GetCurrentOs()
+
+	if osName == "" {
+		panic("cmdProcessor is nil")
+	}
+	if configPath == "" {
+		panic("fileProcessor is nil")
+	}
+
+	processorPlatform := platform.GetPlatformProcessor(osName)
+
+	config := readConfig(configPath, processorPlatform.FP)
+
+	return Processor{
+		OsName:  osName,
+		CP:      processorPlatform.CP,
+		FP:      processorPlatform.FP,
+		Configs: config,
+	}
+}
+
+func readConfig(configPath string, fp file.Processor) []ConfigEnv {
+	fileBytes, err := fp.ReadFile(configPath)
 	if err != nil {
 		panic(err)
 	}
@@ -41,12 +78,7 @@ func NewEnvProcessor(osName, configPath string, cmdProcessor cmd.Processor, file
 		panic(err)
 	}
 
-	return Processor{
-		OsName:  osName,
-		CP:      cmdProcessor,
-		FP:      fileProcessor,
-		Configs: config,
-	}
+	return config
 }
 
 func (p Processor) Process() {

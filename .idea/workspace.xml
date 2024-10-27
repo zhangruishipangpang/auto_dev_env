@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9f486e6b-47d0-44b0-a261-206d2bda4c3d" name="Changes" comment="">
+    <list default="true" id="9f486e6b-47d0-44b0-a261-206d2bda4c3d" name="Changes" comment="update">
+      <change afterPath="$PROJECT_DIR$/src/util/os_util.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd.exe" beforeDir="false" afterPath="$PROJECT_DIR$/cmd.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/env/processor.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/env/processor.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/file/common_file.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/file/common_file.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/platform/platform_store.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/platform/platform_store.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -56,7 +55,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "DefaultGoTemplateProperty": "Go File",
-    "Go Build.go build auto_dev_env/cmd.executor": "Debug",
+    "Go Build.go build auto_dev_env/cmd.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.go.formatter.settings.were.checked": "true",
@@ -118,18 +117,11 @@
       </map>
     </option>
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="update" />
+    <option name="LAST_COMMIT_MESSAGE" value="update" />
+  </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/cmd/main.go</url>
-          <line>35</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

@@ -36,6 +36,7 @@ func GetPlatformProcessor(osName string) ProcessorPlatform {
 	fnc, exist := store[osName]
 	if !exist {
 		log.Printf("[platform.platform_store.go#GetPlatformProcessor] 不支持该操作系统 [%s]", osName)
+		panic("[platform.platform_store.go#GetPlatformProcessor] 不支持该操作系统:" + osName)
 	}
 
 	return fnc()

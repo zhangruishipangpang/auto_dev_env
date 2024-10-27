@@ -2,7 +2,6 @@ package main
 
 import (
 	"auto_dev_env/src/cmd"
-	"auto_dev_env/src/env"
 	"auto_dev_env/src/file"
 	"auto_dev_env/src/platform"
 	"auto_dev_env/src/util"
@@ -15,6 +14,7 @@ func main() {
 
 	// 定义命令行参数
 	configPath := flag.String("config", "", "config path")
+	osName := flag.String("os_name", "", "os name")
 
 	// 解析命令行参数
 	flag.Parse()
@@ -25,7 +25,7 @@ func main() {
 
 	log.Printf("=====> path " + *configPath)
 
-	platform.Register("win", func() platform.ProcessorPlatform {
+	platform.Register("windows", func() platform.ProcessorPlatform {
 		return platform.ProcessorPlatform{
 			OsName: "win",
 			CP:     cmd.WinCmd{},
@@ -33,8 +33,10 @@ func main() {
 		}
 	})
 
-	platformProcessor := platform.GetPlatformProcessor("win")
+	util.GetCurrentOs()
 
-	processor := env.NewEnvProcessor("win", *configPath, platformProcessor.CP, platformProcessor.FP)
-	processor.Process()
+	//platformProcessor := platform.GetPlatformProcessor("win")
+
+	//processor := env.NewEnvProcessor("win", *configPath, platformProcessor.CP, platformProcessor.FP)
+	//processor.Process()
 }
