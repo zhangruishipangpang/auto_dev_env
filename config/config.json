@@ -15,8 +15,8 @@
     "env_config" : [
       {
         "key" : "TEST_JAVA_HOME",
-        "value" : "$bin",
-        "cover" : false,
+        "value" : "$bin3",
+        "cover" : true,
         "append_path" : false
       }
     ]
@@ -42,8 +42,8 @@
     "env_config" : [
       {
         "key" : "TEST_MAVEN_HOME",
-        "value" : "$bin2",
-        "cover" : false,
+        "value" : "$bin3",
+        "cover" : true,
         "append_path" : false
       }
     ]

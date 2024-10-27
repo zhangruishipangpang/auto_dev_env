@@ -3,6 +3,7 @@ package env
 import (
 	"auto_dev_env/src/cmd"
 	"auto_dev_env/src/file"
+	"auto_dev_env/src/general"
 	"auto_dev_env/src/platform"
 	"auto_dev_env/src/util"
 	"encoding/json"
@@ -18,11 +19,12 @@ type Processor struct {
 	OsName  string
 	CP      cmd.Processor
 	FP      file.Processor
+	OG      general.OsGeneral
 	Configs []ConfigEnv
 }
 
 // NewEnvProcessor 创建一个环境处理器
-func NewEnvProcessor(osName, configPath string, cmdProcessor cmd.Processor, fileProcessor file.Processor) Processor {
+func NewEnvProcessor(osName, configPath string, cmdProcessor cmd.Processor, fileProcessor file.Processor, osGeneral general.OsGeneral) Processor {
 
 	if cmdProcessor == nil {
 		panic("cmdProcessor is nil")
@@ -37,18 +39,24 @@ func NewEnvProcessor(osName, configPath string, cmdProcessor cmd.Processor, file
 		OsName:  osName,
 		CP:      cmdProcessor,
 		FP:      fileProcessor,
+		OG:      osGeneral,
 		Configs: config,
 	}
 }
 
 // NewEnvProcessorByCurrentOsName 创建一个环境处理器
-func NewEnvProcessorByCurrentOsName(configPath string) Processor {
+func NewEnvProcessorByCurrentOsName(osNameArg, configPath string) Processor {
 
-	osName := util.GetCurrentOs()
+	osName := osNameArg
+
+	if strings.TrimSpace(osName) == "" {
+		osName = util.GetCurrentOs()
+	}
 
 	if osName == "" {
 		panic("cmdProcessor is nil")
 	}
+
 	if configPath == "" {
 		panic("fileProcessor is nil")
 	}
@@ -61,6 +69,7 @@ func NewEnvProcessorByCurrentOsName(configPath string) Processor {
 		OsName:  osName,
 		CP:      processorPlatform.CP,
 		FP:      processorPlatform.FP,
+		OG:      processorPlatform.OG,
 		Configs: config,
 	}
 }
@@ -92,6 +101,12 @@ func (p Processor) Process() {
 	err = p.createEnvs()
 	if err != nil {
 		log.Println("[env.processor#Process.err(createEnvs)]" + err.Error())
+		return
+	}
+
+	err = p.addPaths()
+	if err != nil {
+		log.Println("[env.processor#Process.err(addPaths)]" + err.Error())
 		return
 	}
 }
@@ -166,7 +181,7 @@ func (p Processor) createEnvs() error {
 	for _, config := range p.Configs {
 		log.Println("->[env.processor#createEnvs]" + config.PrintString())
 
-		sourcePath := config.EnvSourcePath
+		sourcePath := config.EnvTargetPath
 
 		for _, ec := range config.EnvConfig {
 			log.Println("--->[env.processor#createEnvs]" + ec.PrintString())
@@ -192,10 +207,40 @@ func (p Processor) createEnvs() error {
 
 			log.Printf("----->[env.processor#createEnvs] %s 配置完成\n", ec.Key)
 
-			// TODO: 暂时不处理 PATH 评估是否需要
 			if ec.AppendPath {
-				// do nothing
+				addPathStore(ec.Key)
 			}
+		}
+	}
+
+	return nil
+}
+
+func (p Processor) addPaths() error {
+
+	if true {
+		return errors.New("未开启配置PATH")
+	}
+
+	needAddPaths := getNeedAddPaths()
+	if needAddPaths == nil {
+		return nil
+	}
+
+	for _, newPath := range needAddPaths {
+
+		path := p.CP.GetEnv("PATH")
+
+		err := p.CP.SetEnv("PATH_BAK", path)
+		if err != nil {
+			return err
+		}
+
+		path += p.OG.PathGeneral(newPath)
+
+		err = p.CP.SetEnv("PATH", path)
+		if err != nil {
+			return err
 		}
 	}
 

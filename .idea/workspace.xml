@@ -5,9 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9f486e6b-47d0-44b0-a261-206d2bda4c3d" name="Changes" comment="update">
-      <change afterPath="$PROJECT_DIR$/src/util/os_util.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/env/path_add.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/general/os_general.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd.exe" beforeDir="false" afterPath="$PROJECT_DIR$/cmd.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/env/processor.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/env/processor.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/platform/platform_store.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/platform/platform_store.go" afterDir="false" />
     </list>

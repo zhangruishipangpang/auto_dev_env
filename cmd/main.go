@@ -2,7 +2,9 @@ package main
 
 import (
 	"auto_dev_env/src/cmd"
+	"auto_dev_env/src/env"
 	"auto_dev_env/src/file"
+	"auto_dev_env/src/general"
 	"auto_dev_env/src/platform"
 	"auto_dev_env/src/util"
 	"flag"
@@ -30,13 +32,10 @@ func main() {
 			OsName: "win",
 			CP:     cmd.WinCmd{},
 			FP:     file.CommonFileProcessor{},
+			OG:     general.WindowsGeneral{},
 		}
 	})
 
-	util.GetCurrentOs()
-
-	//platformProcessor := platform.GetPlatformProcessor("win")
-
-	//processor := env.NewEnvProcessor("win", *configPath, platformProcessor.CP, platformProcessor.FP)
-	//processor.Process()
+	processor := env.NewEnvProcessorByCurrentOsName(*osName, *configPath)
+	processor.Process()
 }

@@ -3,6 +3,7 @@ package platform
 import (
 	"auto_dev_env/src/cmd"
 	"auto_dev_env/src/file"
+	"auto_dev_env/src/general"
 	"log"
 )
 
@@ -14,6 +15,7 @@ type ProcessorPlatform struct {
 	OsName string
 	CP     cmd.Processor
 	FP     file.Processor
+	OG     general.OsGeneral
 }
 
 type lazyInitPlatformProcessor = func() ProcessorPlatform
