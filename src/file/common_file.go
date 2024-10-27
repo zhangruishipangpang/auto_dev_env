@@ -138,6 +138,7 @@ func (c CommonFileProcessor) Copy(sourcePath string, targetPath string, del bool
 
 // copyFile 复制单个文件
 func (c CommonFileProcessor) copyFile(src, dst string) error {
+
 	sourceFile, err := os.Open(src)
 	if err != nil {
 		return err

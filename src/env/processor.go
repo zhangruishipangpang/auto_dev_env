@@ -53,13 +53,13 @@ func (p Processor) Process() {
 
 	err := p.checkAndCopy()
 	if err != nil {
-		log.Println("[env.processor#Process]" + err.Error())
+		log.Println("[env.processor#Process.err(checkAndCopy)]" + err.Error())
 		return
 	}
 
 	err = p.createEnvs()
 	if err != nil {
-		log.Println("[env.processor#Process]" + err.Error())
+		log.Println("[env.processor#Process.err(createEnvs)]" + err.Error())
 		return
 	}
 }
@@ -157,6 +157,8 @@ func (p Processor) createEnvs() error {
 			if err != nil {
 				return err
 			}
+
+			log.Printf("----->[env.processor#createEnvs] %s 配置完成\n", ec.Key)
 
 			// TODO: 暂时不处理 PATH 评估是否需要
 			if ec.AppendPath {

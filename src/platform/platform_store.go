@@ -18,7 +18,7 @@ type ProcessorPlatform struct {
 
 type lazyInitPlatformProcessor = func() ProcessorPlatform
 
-var store map[string]lazyInitPlatformProcessor
+var store map[string]lazyInitPlatformProcessor = make(map[string]lazyInitPlatformProcessor)
 
 func Register(osName string, fnc lazyInitPlatformProcessor) {
 

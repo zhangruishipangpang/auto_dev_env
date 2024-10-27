@@ -1,9 +1,9 @@
 [
   {
-    "env_name": "测试maven环境",
-    "env_code": "test_maven",
-    "env_source_path": "D:\\test\\maven",
-    "env_target_path": "D:\\test\\maven2",
+    "env_name": "测试jdk环境",
+    "env_code": "test_jvm",
+    "env_source_path": "C:\\env\\sdk\\jdk\\openjdk21",
+    "env_target_path": "D:\\test\\env\\jdk",
     "del_source": false,
     "env_source_check": [
       {
@@ -14,9 +14,36 @@
     ],
     "env_config" : [
       {
+        "key" : "TEST_JAVA_HOME",
+        "value" : "$bin",
+        "cover" : false,
+        "append_path" : false
+      }
+    ]
+  },
+  {
+    "env_name": "测试maven环境",
+    "env_code": "test_maven",
+    "env_source_path": "D:\\dev_tools\\apache-maven-3.9.8",
+    "env_target_path": "D:\\test\\env\\maven",
+    "del_source": false,
+    "env_source_check": [
+      {
+        "name" : "bin",
+        "type" : "dir",
+        "path" : "$bin"
+      },
+      {
+        "name" : "settings",
+        "type" : "file",
+        "path" : "$conf\\settings.xml"
+      }
+    ],
+    "env_config" : [
+      {
         "key" : "TEST_MAVEN_HOME",
-        "value" : "$maven\\bin",
-        "cover" : true,
+        "value" : "$bin2",
+        "cover" : false,
         "append_path" : false
       }
     ]
