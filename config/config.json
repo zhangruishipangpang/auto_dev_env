@@ -1,51 +1,56 @@
-[
-  {
-    "env_name": "测试jdk环境",
-    "env_code": "test_jvm",
-    "env_source_path": "C:\\env\\sdk\\jdk\\openjdk21",
-    "env_target_path": "D:\\test\\env\\jdk",
-    "del_source": false,
-    "env_source_check": [
-      {
-        "name" : "bin",
-        "type" : "dir",
-        "path" : "$bin"
-      }
-    ],
-    "env_config" : [
-      {
-        "key" : "TEST_JAVA_HOME",
-        "value" : "$bin3",
-        "cover" : true,
-        "append_path" : false
-      }
-    ]
-  },
-  {
-    "env_name": "测试maven环境",
-    "env_code": "test_maven",
-    "env_source_path": "D:\\dev_tools\\apache-maven-3.9.8",
-    "env_target_path": "D:\\test\\env\\maven",
-    "del_source": false,
-    "env_source_check": [
-      {
-        "name" : "bin",
-        "type" : "dir",
-        "path" : "$bin"
-      },
-      {
-        "name" : "settings",
-        "type" : "file",
-        "path" : "$conf\\settings.xml"
-      }
-    ],
-    "env_config" : [
-      {
-        "key" : "TEST_MAVEN_HOME",
-        "value" : "$bin3",
-        "cover" : true,
-        "append_path" : false
-      }
-    ]
-  }
-]
+{
+  "default_zip_dir": "",
+  "configs": [
+    {
+      "env_name": "测试jdk环境",
+      "env_code": "jvm",
+      "env_source_path": "C:\\env\\sdk\\jdk\\openjdk21",
+      "env_target_path": "D:\\test\\env\\jdk",
+      "use_default": true,
+      "del_source": false,
+      "env_source_check": [
+        {
+          "name" : "bin",
+          "type" : "dir",
+          "path" : "$bin"
+        }
+      ],
+      "env_config" : [
+        {
+          "key" : "TEST_JAVA_HOME",
+          "value" : "$bin3",
+          "cover" : true,
+          "append_path" : false
+        }
+      ]
+    },
+    {
+      "env_name": "测试maven环境",
+      "env_code": "maven",
+      "env_source_path": "D:\\dev_tools\\apache-maven-3.9.8",
+      "env_target_path": "D:\\test\\env\\maven",
+      "use_default": true,
+      "del_source": false,
+      "env_source_check": [
+        {
+          "name" : "bin",
+          "type" : "dir",
+          "path" : "$bin"
+        },
+        {
+          "name" : "settings",
+          "type" : "file",
+          "path" : "$conf\\settings.xml"
+        }
+      ],
+      "env_config" : [
+        {
+          "key" : "TEST_MAVEN_HOME",
+          "value" : "$bin3",
+          "cover" : true,
+          "append_path" : false
+        }
+      ]
+    }
+  ]
+}

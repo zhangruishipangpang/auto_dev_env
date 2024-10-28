@@ -16,11 +16,11 @@ import (
 // Processor 环境处理器
 // 该处理包含了命令处理器与文件处理器，对环境变量的处理操作都在该结构体中实现
 type Processor struct {
-	OsName  string
-	CP      cmd.Processor
-	FP      file.Processor
-	OG      general.OsGeneral
-	Configs []ConfigEnv
+	OsName     string
+	CP         cmd.Processor
+	FP         file.Processor
+	OG         general.OsGeneral
+	AllConfigs AllConfig
 }
 
 // NewEnvProcessor 创建一个环境处理器
@@ -36,11 +36,11 @@ func NewEnvProcessor(osName, configPath string, cmdProcessor cmd.Processor, file
 	config := readConfig(configPath, fileProcessor)
 
 	return Processor{
-		OsName:  osName,
-		CP:      cmdProcessor,
-		FP:      fileProcessor,
-		OG:      osGeneral,
-		Configs: config,
+		OsName:     osName,
+		CP:         cmdProcessor,
+		FP:         fileProcessor,
+		OG:         osGeneral,
+		AllConfigs: config,
 	}
 }
 
@@ -66,21 +66,21 @@ func NewEnvProcessorByCurrentOsName(osNameArg, configPath string) Processor {
 	config := readConfig(configPath, processorPlatform.FP)
 
 	return Processor{
-		OsName:  osName,
-		CP:      processorPlatform.CP,
-		FP:      processorPlatform.FP,
-		OG:      processorPlatform.OG,
-		Configs: config,
+		OsName:     osName,
+		CP:         processorPlatform.CP,
+		FP:         processorPlatform.FP,
+		OG:         processorPlatform.OG,
+		AllConfigs: config,
 	}
 }
 
-func readConfig(configPath string, fp file.Processor) []ConfigEnv {
+func readConfig(configPath string, fp file.Processor) AllConfig {
 	fileBytes, err := fp.ReadFile(configPath)
 	if err != nil {
 		panic(err)
 	}
 
-	var config []ConfigEnv
+	var config AllConfig
 
 	err = json.Unmarshal(fileBytes, &config)
 	if err != nil {
@@ -116,20 +116,39 @@ func (p Processor) checkAndCopy() error {
 
 	var errorMsg []error
 
-	for _, config := range p.Configs {
+	defaultZipDir := p.AllConfigs.DefaultZipDir
+
+	for _, config := range p.AllConfigs.ConfigEnvs {
 		log.Println("->[env.processor#check]" + config.PrintString())
 
 		sourcePath := config.EnvSourcePath
 
-		exist, err := p.FP.Exist(sourcePath)
-		if err != nil {
-			errorMsg = append(errorMsg, err)
-			continue
-		}
+		if sourcePath != "" {
+			exist, err := p.FP.Exist(sourcePath)
+			if err != nil {
+				errorMsg = append(errorMsg, err)
+				continue
+			}
 
-		// TODO: 资源文件不存在的情况，需要考虑是否将资源文件映射到默认的环境变量配置
-		if !exist {
-
+			// 资源文件不存在的情况，需要考虑是否将资源文件映射到默认的环境变量配置
+			if !exist {
+				if config.UseDefault {
+					err := p.readDefaultZip(defaultZipDir, config)
+					if err != nil {
+						errorMsg = append(errorMsg, err)
+						continue
+					}
+				}
+			}
+		} else {
+			// 资源文件不存在的情况，需要考虑是否将资源文件映射到默认的环境变量配置
+			if config.UseDefault {
+				err := p.readDefaultZip(defaultZipDir, config)
+				if err != nil {
+					errorMsg = append(errorMsg, err)
+					continue
+				}
+			}
 		}
 
 		checkSuccess := true
@@ -187,9 +206,37 @@ func (p Processor) checkAndCopy() error {
 	return errors.Join(errorMsg...)
 }
 
+// readDefaultZip 读取默认的zip配置文件，解压到配置的env_source_path中
+func (p Processor) readDefaultZip(defaultZipDir string, env ConfigEnv) error {
+
+	if defaultZipDir == "" {
+		return errors.New("default_zip_dir 未配置")
+	}
+
+	envName := filepath.Join(defaultZipDir, env.EnvCode)
+	envZipName := envName + ".zip"
+
+	exist, err := p.FP.Exist(envZipName)
+	if err != nil {
+		return err
+	}
+
+	if !exist {
+		return errors.New(envZipName + " 不存在配置")
+	}
+
+	destDir := filepath.Join(defaultZipDir, env.EnvSourcePath)
+	err = p.FP.UnZip(envName, destDir)
+	if err != nil {
+		return errors.New("解压文件错误" + err.Error())
+	}
+
+	return nil
+}
+
 func (p Processor) createEnvs() error {
 
-	for _, config := range p.Configs {
+	for _, config := range p.AllConfigs.ConfigEnvs {
 		log.Println("->[env.processor#createEnvs]" + config.PrintString())
 
 		sourcePath := config.EnvTargetPath

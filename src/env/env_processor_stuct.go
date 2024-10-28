@@ -5,6 +5,11 @@ import (
 	"strconv"
 )
 
+type AllConfig struct {
+	DefaultZipDir string      `json:"default_zip_dir"`
+	ConfigEnvs    []ConfigEnv `json:"configs"`
+}
+
 // ConfigEnv 环境配置信息，从Json文件中读取的自定义配置
 type ConfigEnv struct {
 	EnvName        string    `json:"env_name"`
@@ -12,6 +17,7 @@ type ConfigEnv struct {
 	EnvSourcePath  string    `json:"env_source_path"`
 	EnvTargetPath  string    `json:"env_target_path"`
 	DelSource      bool      `json:"del_source"`
+	UseDefault     bool      `json:"use_default"`
 	EnvSourceCheck []Checker `json:"env_source_check"`
 	EnvConfig      []Config  `json:"env_config"`
 }
