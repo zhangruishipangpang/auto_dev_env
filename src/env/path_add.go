@@ -4,7 +4,7 @@ var pathNews []string = make([]string, 0)
 
 func addPathStore(pathNew string) {
 
-	pathNews = append(pathNews, "%"+pathNew+"%")
+	pathNews = append(pathNews, pathNew)
 }
 
 func getNeedAddPaths() []string {

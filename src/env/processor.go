@@ -121,6 +121,17 @@ func (p Processor) checkAndCopy() error {
 
 		sourcePath := config.EnvSourcePath
 
+		exist, err := p.FP.Exist(sourcePath)
+		if err != nil {
+			errorMsg = append(errorMsg, err)
+			continue
+		}
+
+		// TODO: 资源文件不存在的情况，需要考虑是否将资源文件映射到默认的环境变量配置
+		if !exist {
+
+		}
+
 		checkSuccess := true
 
 		// check
@@ -142,7 +153,7 @@ func (p Processor) checkAndCopy() error {
 				checkSuccess = false
 				log.Println("----->[env.processor#check]" + path + "文件检查未通过")
 				errorMsg = append(errorMsg, errors.New("检查配置："+name+" "+string(fileType)+"不存在，请检查路径"))
-				break
+				continue
 			}
 			log.Println("----->[env.processor#check]文件检查通过")
 		}
@@ -236,7 +247,7 @@ func (p Processor) addPaths() error {
 			return err
 		}
 
-		path += p.OG.PathGeneral(newPath)
+		path = p.OG.PathGeneral(path, newPath)
 
 		err = p.CP.SetEnv("PATH", path)
 		if err != nil {
