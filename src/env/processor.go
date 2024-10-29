@@ -225,10 +225,15 @@ func (p Processor) readDefaultZip(defaultZipDir string, env ConfigEnv) error {
 		return errors.New(envZipName + " 不存在配置")
 	}
 
-	destDir := filepath.Join(defaultZipDir, env.EnvSourcePath)
-	err = p.FP.UnZip(envName, destDir)
+	log.Println("->[env.processor#readDefaultZip]" + envZipName + " - " + env.EnvSourcePath)
+	err = p.FP.UnZip(envZipName, defaultZipDir)
 	if err != nil {
 		return errors.New("解压文件错误" + err.Error())
+	}
+
+	_, err = p.FP.Copy(envName, env.EnvSourcePath, true)
+	if err != nil {
+		return err
 	}
 
 	return nil

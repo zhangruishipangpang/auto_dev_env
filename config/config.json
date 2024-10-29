@@ -1,11 +1,11 @@
 {
-  "default_zip_dir": "",
+  "default_zip_dir": "D:\\test\\env",
   "configs": [
     {
       "env_name": "测试jdk环境",
-      "env_code": "jvm",
-      "env_source_path": "C:\\env\\sdk\\jdk\\openjdk21",
-      "env_target_path": "D:\\test\\env\\jdk",
+      "env_code": "jdk",
+      "env_source_path": "D:\\test\\env2\\jdk",
+      "env_target_path": "D:\\test\\env2\\jdk",
       "use_default": true,
       "del_source": false,
       "env_source_check": [
@@ -17,8 +17,14 @@
       ],
       "env_config" : [
         {
-          "key" : "TEST_JAVA_HOME",
+          "key" : "TEST_JAVA_HOME_BIN",
           "value" : "$bin3",
+          "cover" : true,
+          "append_path" : false
+        },
+        {
+          "key" : "TEST_JAVA_HOME",
+          "value" : "$",
           "cover" : true,
           "append_path" : false
         }
@@ -27,8 +33,8 @@
     {
       "env_name": "测试maven环境",
       "env_code": "maven",
-      "env_source_path": "D:\\dev_tools\\apache-maven-3.9.8",
-      "env_target_path": "D:\\test\\env\\maven",
+      "env_source_path": "D:\\test\\env2\\maven",
+      "env_target_path": "D:\\test\\env2\\maven",
       "use_default": true,
       "del_source": false,
       "env_source_check": [
@@ -45,8 +51,14 @@
       ],
       "env_config" : [
         {
+          "key" : "TEST_MAVEN_HOME_BIN",
+          "value" : "$bin",
+          "cover" : true,
+          "append_path" : false
+        },
+        {
           "key" : "TEST_MAVEN_HOME",
-          "value" : "$bin3",
+          "value" : "$",
           "cover" : true,
           "append_path" : false
         }
