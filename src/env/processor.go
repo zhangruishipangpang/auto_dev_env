@@ -8,6 +8,7 @@ import (
 	"auto_dev_env/src/util"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"path/filepath"
 	"strings"
@@ -125,31 +126,12 @@ func (p Processor) checkAndCopy() error {
 		sourcePath := filepath.Join(config.EnvSourcePath, envCode)
 		targetPath := filepath.Join(config.EnvTargetPath, envCode)
 
-		if sourcePath != "" {
-			exist, err := p.FP.Exist(sourcePath)
+		// 如果开启了使用默认配置，则直接覆盖sourcePath配置
+		if config.UseDefault {
+			err := p.readDefaultZip(defaultZipDir, config)
 			if err != nil {
 				errorMsg = append(errorMsg, err)
 				continue
-			}
-
-			// 资源文件不存在的情况，需要考虑是否将资源文件映射到默认的环境变量配置
-			if !exist {
-				if config.UseDefault {
-					err := p.readDefaultZip(defaultZipDir, config)
-					if err != nil {
-						errorMsg = append(errorMsg, err)
-						continue
-					}
-				}
-			}
-		} else {
-			// 资源文件不存在的情况，需要考虑是否将资源文件映射到默认的环境变量配置
-			if config.UseDefault {
-				err := p.readDefaultZip(defaultZipDir, config)
-				if err != nil {
-					errorMsg = append(errorMsg, err)
-					continue
-				}
 			}
 		}
 
@@ -227,12 +209,15 @@ func (p Processor) readDefaultZip(defaultZipDir string, env ConfigEnv) error {
 	}
 
 	log.Println("->[env.processor#readDefaultZip]" + envZipName + " - " + env.EnvSourcePath)
+
 	err = p.FP.UnZip(envZipName, defaultZipDir)
 	if err != nil {
 		return errors.New("解压文件错误" + err.Error())
 	}
 
-	_, err = p.FP.Copy(envName, env.EnvSourcePath, true)
+	targetCopyPath := filepath.Join(env.EnvTargetPath, env.EnvCode)
+
+	_, err = p.FP.Copy(envName, targetCopyPath, true)
 	if err != nil {
 		return err
 	}
@@ -245,7 +230,7 @@ func (p Processor) createEnvs() error {
 	for _, config := range p.AllConfigs.ConfigEnvs {
 		log.Println("->[env.processor#createEnvs]" + config.PrintString())
 
-		sourcePath := config.EnvTargetPath
+		placeholder := config.EnvTargetPath
 
 		for _, ec := range config.EnvConfig {
 			log.Println("--->[env.processor#createEnvs]" + ec.PrintString())
@@ -260,8 +245,10 @@ func (p Processor) createEnvs() error {
 			}
 
 			value := ec.Value
+
+			// 处理占位符 - sourcePath
 			if strings.HasPrefix(value, "$") {
-				value = filepath.Join(sourcePath, value[1:])
+				value = filepath.Join(placeholder, value[1:])
 			}
 
 			err := p.CP.SetEnv(ec.Key, value)
@@ -271,8 +258,17 @@ func (p Processor) createEnvs() error {
 
 			log.Printf("----->[env.processor#createEnvs] %s 配置完成\n", ec.Key)
 
+			// 如果需要添加path，则添加到待添加path列表
 			if ec.AppendPath {
-				addPathStore(ec.Key)
+
+				newPath := ec.Key
+
+				// 处理添加到 path 中的后置
+				if ec.Suffix != nil && len(ec.Suffix) > 0 {
+					newPath = filepath.Join(p.OG.PathMapping(newPath), filepath.Join(ec.Suffix...))
+				}
+
+				addPathStore(newPath)
 			}
 		}
 	}
@@ -282,30 +278,31 @@ func (p Processor) createEnvs() error {
 
 func (p Processor) addPaths() error {
 
-	if true {
-		return errors.New("未开启配置PATH")
+	needAddPaths := getNeedAddPaths()
+
+	for _, nap := range needAddPaths {
+		fmt.Println("====> ", nap)
 	}
 
-	needAddPaths := getNeedAddPaths()
 	if needAddPaths == nil {
 		return nil
 	}
 
+	path := p.CP.GetEnv("PATH")
+
+	err := p.CP.SetEnv("PATH_BAK", path)
+	if err != nil {
+		return err
+	}
+
 	for _, newPath := range needAddPaths {
 
-		path := p.CP.GetEnv("PATH")
-
-		err := p.CP.SetEnv("PATH_BAK", path)
-		if err != nil {
-			return err
-		}
-
 		path = p.OG.PathGeneral(path, newPath)
+	}
 
-		err = p.CP.SetEnv("PATH", path)
-		if err != nil {
-			return err
-		}
+	err = p.CP.SetEnv("PATH", path)
+	if err != nil {
+		return err
 	}
 
 	return nil

@@ -1,5 +1,5 @@
 {
-  "default_zip_dir": "D:\\test",
+  "default_zip_dir": "D:\\test\\env",
   "configs": [
     {
       "env_name": "测试jdk环境",
@@ -17,16 +17,11 @@
       ],
       "env_config" : [
         {
-          "key" : "TEST_JAVA_HOME_BIN",
-          "value" : "$bin",
-          "cover" : true,
-          "append_path" : false
-        },
-        {
           "key" : "TEST_JAVA_HOME",
           "value" : "$",
           "cover" : true,
-          "append_path" : false
+          "suffix_path" : ["bin"],
+          "append_path" : true
         }
       ]
     }

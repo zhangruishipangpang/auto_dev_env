@@ -23,6 +23,7 @@ func main() {
 	}
 
 	log.Printf("=====> path " + *configPath)
+
 	processor := env.NewEnvProcessorByCurrentOsName(*osName, *configPath)
 	processor.Process()
 }

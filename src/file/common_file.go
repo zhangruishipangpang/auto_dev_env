@@ -115,7 +115,7 @@ func (c CommonFileProcessor) UnZip(src, target string) error {
 	}
 
 	bar.Finish()
-	fmt.Println(" finish.")
+	fmt.Println(" finish. \n ")
 
 	return nil
 }
@@ -163,7 +163,7 @@ func (c CommonFileProcessor) Copy(sourcePath string, targetPath string, del bool
 
 	bar.Add(1)
 	bar.Finish()
-	fmt.Println(" finish.")
+	fmt.Println(" finish. \n ")
 
 	return true, nil
 }

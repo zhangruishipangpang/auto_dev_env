@@ -44,10 +44,11 @@ func (c Checker) PrintString() string {
 }
 
 type Config struct {
-	Key        string `json:"key"`
-	Value      string `json:"value"`
-	Cover      bool   `json:"cover"`
-	AppendPath bool   `json:"append_path"`
+	Key        string   `json:"key"`
+	Value      string   `json:"value"`
+	Cover      bool     `json:"cover"`
+	Suffix     []string `json:"suffix_path"`
+	AppendPath bool     `json:"append_path"`
 }
 
 func (c Config) PrintString() string {
