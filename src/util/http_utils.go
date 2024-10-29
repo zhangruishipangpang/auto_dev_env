@@ -2,7 +2,6 @@ package util
 
 import (
 	"fmt"
-	"github.com/cheggaaa/pb/v3"
 	"io"
 	"net/http"
 	"os"
@@ -38,16 +37,6 @@ func GetInternetResourceToLocal(resourceUrl, localPath, downloadFileName string)
 
 	fmt.Println("contentLength===>", contentLength)
 
-	tmpl := `{{ red "Downloading...:" }} {{ bar . "<" "-" (cycle . "|" "↗" "↘" "↙" ) "." ">"}} {{speed . | rndcolor }} {{percent .}}`
-
-	// start bar based on our template
-	bar := pb.ProgressBarTemplate(tmpl).Start64(contentLength).SetWidth(100)
-	bar.Start()
-
-	// 创建进度条
-	//bar := pb.Full.Start64(contentLength)
-	defer bar.Finish()
-
 	// 读取响应体并写入文件
 	buf := make([]byte, 32*1024)
 	for {
@@ -56,7 +45,6 @@ func GetInternetResourceToLocal(resourceUrl, localPath, downloadFileName string)
 			if _, err := dirFile.Write(buf[:n]); err != nil {
 				return err
 			}
-			bar.Add64(int64(n))
 		}
 		if err == io.EOF {
 			fmt.Println("eof break")

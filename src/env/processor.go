@@ -121,7 +121,9 @@ func (p Processor) checkAndCopy() error {
 	for _, config := range p.AllConfigs.ConfigEnvs {
 		log.Println("->[env.processor#check]" + config.PrintString())
 
-		sourcePath := config.EnvSourcePath
+		envCode := config.EnvCode
+		sourcePath := filepath.Join(config.EnvSourcePath, envCode)
+		targetPath := filepath.Join(config.EnvTargetPath, envCode)
 
 		if sourcePath != "" {
 			exist, err := p.FP.Exist(sourcePath)
@@ -182,7 +184,6 @@ func (p Processor) checkAndCopy() error {
 			continue
 		}
 
-		targetPath := config.EnvTargetPath
 		if targetPath == "" || targetPath == sourcePath {
 			log.Println("----->[env.processor#check] 无须copy")
 			continue
@@ -225,8 +226,7 @@ func (p Processor) readDefaultZip(defaultZipDir string, env ConfigEnv) error {
 		return errors.New(envZipName + " 不存在配置")
 	}
 
-	destDir := filepath.Join(defaultZipDir, env.EnvSourcePath)
-	err = p.FP.UnZip(envName, destDir)
+	err = p.FP.UnZip(envZipName, env.EnvSourcePath)
 	if err != nil {
 		return errors.New("解压文件错误" + err.Error())
 	}

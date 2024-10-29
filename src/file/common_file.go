@@ -2,8 +2,11 @@ package file
 
 import (
 	"archive/zip"
+	"auto_dev_env/src/util"
 	"errors"
+	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -47,12 +50,26 @@ func (c CommonFileProcessor) Exist(path string) (bool, error) {
 }
 
 func (c CommonFileProcessor) UnZip(src, target string) error {
+
+	log.Println("\n开始解压文件：" + src + "\n")
+
 	// 打开 zip 文件
 	r, err := zip.OpenReader(src)
 	if err != nil {
 		return err
 	}
 	defer r.Close()
+
+	total := 0
+	for _, f := range r.File {
+		// 检查目标路径是否为目录
+		if f.FileInfo().IsDir() {
+			continue
+		}
+		total++
+	}
+
+	bar := util.GetProgressBar("unZip", total)
 
 	// 创建目标目录
 	if err := os.MkdirAll(target, 0755); err != nil {
@@ -93,12 +110,21 @@ func (c CommonFileProcessor) UnZip(src, target string) error {
 		if _, err := io.Copy(dstFile, srcFile); err != nil {
 			return err
 		}
+
+		bar.Add(1)
 	}
+
+	bar.Finish()
+	fmt.Println(" finish.")
 
 	return nil
 }
 
 func (c CommonFileProcessor) Copy(sourcePath string, targetPath string, del bool) (bool, error) {
+
+	log.Println("\n 开始复制文件 : " + sourcePath + "\n")
+
+	bar := util.GetProgressBar("Copy", 3)
 
 	stat, err := os.Stat(sourcePath)
 	if os.IsNotExist(err) {
@@ -118,6 +144,7 @@ func (c CommonFileProcessor) Copy(sourcePath string, targetPath string, del bool
 			return false, err
 		}
 	}
+	bar.Add(1)
 
 	if del {
 		if isDir {
@@ -131,7 +158,12 @@ func (c CommonFileProcessor) Copy(sourcePath string, targetPath string, del bool
 				return false, err
 			}
 		}
+		bar.Add(1)
 	}
+
+	bar.Add(1)
+	bar.Finish()
+	fmt.Println(" finish.")
 
 	return true, nil
 }
