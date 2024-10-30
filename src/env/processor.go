@@ -1,31 +1,32 @@
 package env
 
 import (
-	"auto_dev_env/src/cmd"
-	"auto_dev_env/src/file"
-	"auto_dev_env/src/general"
+	"auto_dev_env/src/inter"
 	"auto_dev_env/src/platform"
 	"auto_dev_env/src/util"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"log"
+	"github.com/fatih/color"
 	"path/filepath"
 	"strings"
 )
+
+var cpf = color.New(color.FgCyan).Add(color.Bold)
+var cpb = color.New(color.FgBlue)
+var cpr = color.New(color.BgRed).Add(color.Bold).Add(color.Underline)
 
 // Processor 环境处理器
 // 该处理包含了命令处理器与文件处理器，对环境变量的处理操作都在该结构体中实现
 type Processor struct {
 	OsName     string
-	CP         cmd.Processor
-	FP         file.Processor
-	OG         general.OsGeneral
+	CP         inter.CmdProcessor
+	FP         inter.FileProcessor
+	OG         inter.GenOsGeneral
 	AllConfigs AllConfig
 }
 
 // NewEnvProcessor 创建一个环境处理器
-func NewEnvProcessor(osName, configPath string, cmdProcessor cmd.Processor, fileProcessor file.Processor, osGeneral general.OsGeneral) Processor {
+func NewEnvProcessor(osName, configPath string, cmdProcessor inter.CmdProcessor, fileProcessor inter.FileProcessor, osGeneral inter.GenOsGeneral) Processor {
 
 	if cmdProcessor == nil {
 		panic("cmdProcessor is nil")
@@ -75,7 +76,7 @@ func NewEnvProcessorByCurrentOsName(osNameArg, configPath string) Processor {
 	}
 }
 
-func readConfig(configPath string, fp file.Processor) AllConfig {
+func readConfig(configPath string, fp inter.FileProcessor) AllConfig {
 	fileBytes, err := fp.ReadFile(configPath)
 	if err != nil {
 		panic(err)
@@ -95,19 +96,19 @@ func (p Processor) Process() {
 
 	err := p.checkAndCopy()
 	if err != nil {
-		log.Println("[env.processor#Process.err(checkAndCopy)]" + err.Error())
+		_, _ = cpr.Println(" [env.processor#Process.err(checkAndCopy)]" + err.Error())
 		return
 	}
 
 	err = p.createEnvs()
 	if err != nil {
-		log.Println("[env.processor#Process.err(createEnvs)]" + err.Error())
+		_, _ = cpr.Println(" [env.processor#Process.err(createEnvs)]" + err.Error())
 		return
 	}
 
 	err = p.addPaths()
 	if err != nil {
-		log.Println("[env.processor#Process.err(addPaths)]" + err.Error())
+		_, _ = cpr.Println(" [env.processor#Process.err(addPaths)]" + err.Error())
 		return
 	}
 }
@@ -115,12 +116,14 @@ func (p Processor) Process() {
 // check 检查文件是否齐全
 func (p Processor) checkAndCopy() error {
 
+	_, _ = cpf.Printf("\n\n 开始执行 checkAndCopy 节点 ")
+
 	var errorMsg []error
 
 	defaultZipDir := p.AllConfigs.DefaultZipDir
 
 	for _, config := range p.AllConfigs.ConfigEnvs {
-		log.Println("->[env.processor#check]" + config.PrintString())
+		_, _ = cpb.Printf("\n config -> %s", config.PrintString())
 
 		envCode := config.EnvCode
 		sourcePath := filepath.Join(config.EnvSourcePath, envCode)
@@ -139,7 +142,7 @@ func (p Processor) checkAndCopy() error {
 
 		// check
 		for _, checkSource := range config.EnvSourceCheck {
-			log.Println("--->[env.processor#check]" + checkSource.PrintString())
+			_, _ = cpb.Printf("\n check source: %s", config.PrintString())
 
 			name := checkSource.Name
 			path := checkSource.Path
@@ -154,11 +157,11 @@ func (p Processor) checkAndCopy() error {
 			}
 			if !exist {
 				checkSuccess = false
-				log.Println("----->[env.processor#check]" + path + "文件检查未通过")
+				_, _ = cpb.Printf("\n ---->[%s]文件检查未通过", path)
 				errorMsg = append(errorMsg, errors.New("检查配置："+name+" "+string(fileType)+"不存在，请检查路径"))
 				continue
 			}
-			log.Println("----->[env.processor#check]文件检查通过")
+			_, _ = cpb.Printf("\n ---->[%s]文件检查通过", path)
 		}
 
 		// copy
@@ -167,7 +170,7 @@ func (p Processor) checkAndCopy() error {
 		}
 
 		if targetPath == "" || targetPath == sourcePath {
-			log.Println("----->[env.processor#check] 无须copy")
+			_, _ = cpb.Printf("\n\n 无须copy")
 			continue
 		}
 
@@ -208,7 +211,7 @@ func (p Processor) readDefaultZip(defaultZipDir string, env ConfigEnv) error {
 		return errors.New(envZipName + " 不存在配置")
 	}
 
-	log.Println("->[env.processor#readDefaultZip]" + envZipName + " - " + env.EnvSourcePath)
+	_, _ = cpb.Printf("\n 查找到待解压文件：[%s]", envZipName)
 
 	err = p.FP.UnZip(envZipName, defaultZipDir)
 	if err != nil {
@@ -227,19 +230,20 @@ func (p Processor) readDefaultZip(defaultZipDir string, env ConfigEnv) error {
 
 func (p Processor) createEnvs() error {
 
-	for _, config := range p.AllConfigs.ConfigEnvs {
-		log.Println("->[env.processor#createEnvs]" + config.PrintString())
+	_, _ = cpf.Printf("\n\n 开始执行 createEnvs 节点 ")
 
+	for _, config := range p.AllConfigs.ConfigEnvs {
+		_, _ = cpb.Printf("\n config env:    %s", config.PrintString())
 		placeholder := config.EnvTargetPath
 
 		for _, ec := range config.EnvConfig {
-			log.Println("--->[env.processor#createEnvs]" + ec.PrintString())
+			_, _ = cpb.Printf("\n env:    %s", config.PrintString())
 
 			existEnv := p.CP.GetEnv(ec.Key)
 
 			if existEnv != "" {
 				if !ec.Cover {
-					log.Println("----->[env.processor#createEnvs] 已经存在，skip...")
+					_, _ = cpb.Printf("\n --->已经存在，skip...")
 					continue
 				}
 			}
@@ -256,7 +260,7 @@ func (p Processor) createEnvs() error {
 				return err
 			}
 
-			log.Printf("----->[env.processor#createEnvs] %s 配置完成\n", ec.Key)
+			_, _ = cpb.Printf("\n --->[%s] 配置完成", ec.Key)
 
 			// 如果需要添加path，则添加到待添加path列表
 			if ec.AppendPath {
@@ -278,11 +282,9 @@ func (p Processor) createEnvs() error {
 
 func (p Processor) addPaths() error {
 
-	needAddPaths := getNeedAddPaths()
+	_, _ = cpf.Printf("\n\n 开始执行 addPaths 节点 ")
 
-	for _, nap := range needAddPaths {
-		fmt.Println("====> ", nap)
-	}
+	needAddPaths := getNeedAddPaths()
 
 	if needAddPaths == nil {
 		return nil
@@ -304,6 +306,5 @@ func (p Processor) addPaths() error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }

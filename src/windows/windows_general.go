@@ -1,10 +1,4 @@
-package general
-
-type OsGeneral interface {
-	PathGeneral(path, newPath string) string
-
-	PathMapping(path string) string
-}
+package windows
 
 type WindowsGeneral struct {
 }

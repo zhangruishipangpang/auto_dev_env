@@ -1,15 +1,19 @@
-package file
+package common
 
 import (
 	"archive/zip"
 	"auto_dev_env/src/util"
 	"errors"
 	"fmt"
+	"github.com/fatih/color"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 )
+
+var cpf = color.New(color.FgCyan).Add(color.Bold)
+var cpb = color.New(color.FgBlue)
+var cpr = color.New(color.BgRed).Add(color.Bold).Add(color.Underline)
 
 type CommonFileProcessor struct {
 }
@@ -51,7 +55,10 @@ func (c CommonFileProcessor) Exist(path string) (bool, error) {
 
 func (c CommonFileProcessor) UnZip(src, target string) error {
 
-	log.Println("\n开始解压文件：" + src + "\n")
+	_, err := cpf.Printf("\n 开始解压文件: [%s] ", src)
+	if err != nil {
+		panic(err)
+	}
 
 	// 打开 zip 文件
 	r, err := zip.OpenReader(src)
@@ -115,14 +122,14 @@ func (c CommonFileProcessor) UnZip(src, target string) error {
 	}
 
 	bar.Finish()
-	fmt.Println(" finish. \n ")
+	fmt.Println(" finish.")
 
 	return nil
 }
 
 func (c CommonFileProcessor) Copy(sourcePath string, targetPath string, del bool) (bool, error) {
 
-	log.Println("\n 开始复制文件 : " + sourcePath + "\n")
+	_, _ = cpf.Printf("\n 开始复制文件: [%s] \n", sourcePath)
 
 	bar := util.GetProgressBar("Copy", 3)
 
@@ -163,7 +170,7 @@ func (c CommonFileProcessor) Copy(sourcePath string, targetPath string, del bool
 
 	bar.Add(1)
 	bar.Finish()
-	fmt.Println(" finish. \n ")
+	fmt.Println(" finish.")
 
 	return true, nil
 }

@@ -1,4 +1,4 @@
-package cmd
+package windows
 
 import (
 	"auto_dev_env/src/util"

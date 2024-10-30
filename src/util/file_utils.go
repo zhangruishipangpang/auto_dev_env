@@ -1,10 +1,12 @@
 package util
 
 import (
-	"log"
+	"github.com/fatih/color"
 	"os"
 	"path/filepath"
 )
+
+var cpr = color.New(color.BgRed).Add(color.Bold)
 
 const (
 	AbsoluteShellDir = "shell"
@@ -20,7 +22,7 @@ func FindShellDirPath() string {
 func FindCurrentDir() string {
 	currentDir, err := os.Getwd()
 	if err != nil {
-		log.Fatalf("Error getting the current working directory: %v", err)
+		_, _ = cpr.Printf("Error getting the current working directory: %v", err)
 		panic("Error getting the current working directory")
 	}
 

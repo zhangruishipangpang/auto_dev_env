@@ -1,27 +1,25 @@
 package platform
 
 import (
-	"auto_dev_env/src/cmd"
-	"auto_dev_env/src/file"
-	"auto_dev_env/src/general"
-	"log"
+	"auto_dev_env/src/common"
+	"auto_dev_env/src/windows"
+	"github.com/fatih/color"
 )
 
+var cpg = color.New(color.FgGreen).Add(color.Bold)
+
 func init() {
-	log.Printf("plarform init")
+	_, _ = cpg.Println("\n platform init")
 	defaultPlatform()
-
-	// TODO: 待添加读取 plugin
-
 }
 
 func defaultPlatform() {
 	Register("windows", func() ProcessorPlatform {
 		return ProcessorPlatform{
 			OsName: "windows",
-			CP:     cmd.WinCmd{},
-			FP:     file.CommonFileProcessor{},
-			OG:     general.WindowsGeneral{},
+			CP:     windows.WinCmd{},
+			FP:     common.CommonFileProcessor{},
+			OG:     windows.WindowsGeneral{},
 		}
 	})
 }

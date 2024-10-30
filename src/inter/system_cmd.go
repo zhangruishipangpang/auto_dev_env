@@ -1,7 +1,7 @@
-package cmd
+package inter
 
-// Processor 命令行执行
-type Processor interface {
+// CmdProcessor 命令行执行
+type CmdProcessor interface {
 	// Cmd 执行命令行
 	Cmd(name string, arg ...string) ([]byte, error)
 	// SetEnv 添加全局环境变量信息

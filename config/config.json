@@ -2,7 +2,7 @@
   "default_zip_dir": "D:\\test\\env",
   "configs": [
     {
-      "env_name": "测试jdk环境",
+      "env_name": "jdk环境",
       "env_code": "jdk",
       "env_source_path": "D:\\test\\source",
       "env_target_path": "D:\\test\\source",
@@ -17,9 +17,9 @@
       ],
       "env_config" : [
         {
-          "key" : "TEST_JAVA_HOME",
+          "key" : "JAVA_HOME",
           "value" : "$",
-          "cover" : true,
+          "cover" : false,
           "suffix_path" : ["bin"],
           "append_path" : true
         }

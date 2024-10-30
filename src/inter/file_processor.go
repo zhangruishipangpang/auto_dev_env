@@ -1,7 +1,7 @@
-package file
+package inter
 
-// Processor FP(File Processor) 处理程序
-type Processor interface {
+// FileProcessor FP(File FileProcessor) 处理程序
+type FileProcessor interface {
 	// Exist 检测文件路径是否存在
 	Exist(path string) (bool, error)
 	// UnZip 解压缩文件
