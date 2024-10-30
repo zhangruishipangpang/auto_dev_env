@@ -11,8 +11,8 @@ import (
 	"strings"
 )
 
-var cpf = color.New(color.FgCyan).Add(color.Bold)
-var cpb = color.New(color.FgBlue)
+var cpf = color.New(color.FgBlue).Add(color.Bold)
+var cpb = color.New(color.FgCyan)
 var cpr = color.New(color.BgRed).Add(color.Bold).Add(color.Underline)
 
 // Processor 环境处理器
