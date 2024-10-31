@@ -76,7 +76,7 @@ func (c CommonFileProcessor) UnZip(src, target string) error {
 		total++
 	}
 
-	bar := util.GetProgressBar("unZip", total)
+	bar := util.GetProgressBar(" UnZip", total)
 
 	// 创建目标目录
 	if err := os.MkdirAll(target, 0755); err != nil {
@@ -131,7 +131,7 @@ func (c CommonFileProcessor) Copy(sourcePath string, targetPath string, del bool
 
 	_, _ = cpf.Printf("\n 开始复制文件: [%s] \n", sourcePath)
 
-	bar := util.GetProgressBar("Copy", 3)
+	bar := util.GetProgressBar(" Copy", 3)
 
 	stat, err := os.Stat(sourcePath)
 	if os.IsNotExist(err) {

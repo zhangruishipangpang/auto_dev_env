@@ -13,7 +13,7 @@ import (
 
 var cpf = color.New(color.FgBlue).Add(color.Bold)
 var cpb = color.New(color.FgCyan)
-var cpr = color.New(color.BgRed).Add(color.Bold).Add(color.Underline)
+var cpr = color.New(color.FgRed).Add(color.Bold).Add(color.Underline)
 
 // Processor 环境处理器
 // 该处理包含了命令处理器与文件处理器，对环境变量的处理操作都在该结构体中实现
@@ -96,19 +96,19 @@ func (p Processor) Process() {
 
 	err := p.checkAndCopy()
 	if err != nil {
-		_, _ = cpr.Println(" [env.processor#Process.err(checkAndCopy)]" + err.Error())
+		_, _ = cpr.Println("\n " + err.Error())
 		return
 	}
 
 	err = p.createEnvs()
 	if err != nil {
-		_, _ = cpr.Println(" [env.processor#Process.err(createEnvs)]" + err.Error())
+		_, _ = cpr.Println("\n " + err.Error())
 		return
 	}
 
 	err = p.addPaths()
 	if err != nil {
-		_, _ = cpr.Println(" [env.processor#Process.err(addPaths)]" + err.Error())
+		_, _ = cpr.Println("\n " + err.Error())
 		return
 	}
 }
