@@ -1,9 +1,11 @@
 package args_ask
 
 import (
+	"auto_dev_env/src/common"
 	"auto_dev_env/src/platform"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
+	"path/filepath"
 	"strings"
 )
 
@@ -34,7 +36,7 @@ var qs = []*survey.Question{
 		Name: "envs",
 		Prompt: &survey.MultiSelect{
 			Message: "选择需要初始化的环境变量",
-			Options: platform.EnvStore,
+			Options: findEnvs(),
 		},
 	},
 }
@@ -56,4 +58,22 @@ func Ask() (Args, error) {
 
 	return answers, nil
 
+}
+
+func findEnvs() []string {
+	choosesPath := "envs_chooses.txt"
+
+	abPath := filepath.Join("./config", choosesPath)
+
+	processor := common.CommonFileProcessor{}
+
+	bytes, err := processor.ReadFile(abPath)
+	if err != nil {
+		return nil
+	}
+
+	// 使用换行符分割字符串
+	lines := strings.Split(string(bytes), "\n")
+
+	return lines
 }
