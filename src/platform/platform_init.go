@@ -9,7 +9,7 @@ import (
 var cpg = color.New(color.FgGreen).Add(color.Bold)
 
 var OsStore []string = make([]string, 0)
-var EnvStore []string = []string{"jdk", "maven", "nvm"}
+var EnvStore []string = []string{"jdk", "maven"}
 
 func init() {
 	//_, _ = cpg.Println("\n platform init")
