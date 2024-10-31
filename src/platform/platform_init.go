@@ -8,12 +8,17 @@ import (
 
 var cpg = color.New(color.FgGreen).Add(color.Bold)
 
+var OsStore []string = make([]string, 0)
+var EnvStore []string = []string{"jdk", "maven", "nvm"}
+
 func init() {
-	_, _ = cpg.Println("\n platform init")
+	//_, _ = cpg.Println("\n platform init")
 	defaultPlatform()
 }
 
 func defaultPlatform() {
+	OsStore = append(OsStore, "windows")
+	OsStore = append(OsStore, "linux")
 	Register("windows", func() ProcessorPlatform {
 		return ProcessorPlatform{
 			OsName: "windows",

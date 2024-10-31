@@ -15,6 +15,7 @@ func GetProgressBar(prefix string, total int) *progressbar.ProgressBar {
 		progressbar.OptionShowElapsedTimeOnFinish(),
 		progressbar.OptionSetDescription("[cyan]"+prefix+"[reset]"),
 		progressbar.OptionSetTheme(progressbar.ThemeDefault),
+		progressbar.OptionShowDescriptionAtLineEnd(),
 	)
 
 	return bar
