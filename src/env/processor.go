@@ -98,13 +98,31 @@ func readConfig(configPath string, interestedEnv []string, fp inter.FileProcesso
 	}
 
 	for _, c := range config.ConfigEnvs {
+
+		abS, err := filepath.Abs(c.EnvSourcePath)
+		if err != nil {
+			panic(abS)
+		}
+		c.EnvSourcePath = abS
+
+		abT, err := filepath.Abs(c.EnvTargetPath)
+		if err != nil {
+			return AllConfig{}
+		}
+		c.EnvTargetPath = abT
+
 		if b := tmpStore[c.EnvCode]; b {
 			ConfigEnvs = append(ConfigEnvs, c)
 		}
 	}
 
+	abp, err := filepath.Abs(config.DefaultZipDir)
+	if err != nil {
+		panic(err)
+	}
+
 	var config0 = AllConfig{
-		DefaultZipDir: config.DefaultZipDir,
+		DefaultZipDir: abp,
 		ConfigEnvs:    ConfigEnvs,
 	}
 
