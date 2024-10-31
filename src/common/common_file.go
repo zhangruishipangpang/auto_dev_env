@@ -132,7 +132,7 @@ func (c CommonFileProcessor) Copy(sourcePath string, targetPath string, del bool
 
 	stat, err := os.Stat(sourcePath)
 	if os.IsNotExist(err) {
-		return false, errors.New("sourcePath not found")
+		return false, errors.New(sourcePath + "sourcePath not found")
 	}
 
 	isDir := stat.IsDir()

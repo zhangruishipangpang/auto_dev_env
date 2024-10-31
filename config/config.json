@@ -1,23 +1,14 @@
 {
-  "default_zip_dir": "D:\\test",
+  "default_zip_dir": "./zip",
   "configs": [
     {
       "env_name": "jdk环境",
       "env_code": "jdk",
-      "env_source_path": "D:\\test\\source",
-      "env_target_path": "D:\\test\\source",
+      "env_source_path": "./source",
+      "env_target_path": "./source",
       "use_default": true,
       "del_source": false,
       "env_source_check": [
-        {
-          "name" : "bin",
-          "type" : "dir",
-          "path" : "$bin"
-        },{
-          "name" : "bin",
-          "type" : "dir",
-          "path" : "$bin"
-        },
         {
           "name" : "bin",
           "type" : "dir",
@@ -26,7 +17,37 @@
       ],
       "env_config" : [
         {
-          "key" : "TEST_JAVA_HOME",
+          "key" : "JAVA_HOME",
+          "value" : "$",
+          "cover" : true,
+          "suffix_path" : ["bin"],
+          "append_path" : true
+        }
+      ]
+    },
+
+    {
+      "env_name": "maven环境",
+      "env_code": "maven",
+      "env_source_path": "./source",
+      "env_target_path": "./source",
+      "use_default": true,
+      "del_source": false,
+      "env_source_check": [
+        {
+          "name" : "bin",
+          "type" : "dir",
+          "path" : "$bin"
+        },
+        {
+          "name" : "settings.xml",
+          "type" : "file",
+          "path" : "$config/settings.xml"
+        }
+      ],
+      "env_config" : [
+        {
+          "key" : "MAVEN_HOME",
           "value" : "$",
           "cover" : true,
           "suffix_path" : ["bin"],

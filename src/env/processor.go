@@ -6,6 +6,7 @@ import (
 	"auto_dev_env/src/util"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/fatih/color"
 	"path/filepath"
 	"strings"
@@ -13,7 +14,7 @@ import (
 
 var cpf = color.New(color.FgBlue).Add(color.Bold)
 var cpb = color.New(color.FgCyan)
-var cpr = color.New(color.FgRed).Add(color.Bold).Add(color.Underline)
+var cpr = color.New(color.BgRed).Add(color.Bold).Add(color.Underline)
 
 // Processor 环境处理器
 // 该处理包含了命令处理器与文件处理器，对环境变量的处理操作都在该结构体中实现
@@ -102,7 +103,7 @@ func readConfig(configPath string, interestedEnv []string, fp inter.FileProcesso
 		}
 	}
 
-	var config0 AllConfig = AllConfig{
+	var config0 = AllConfig{
 		DefaultZipDir: config.DefaultZipDir,
 		ConfigEnvs:    ConfigEnvs,
 	}
@@ -205,6 +206,8 @@ func (p Processor) checkAndCopy() error {
 
 	}
 
+	fmt.Println()
+
 	if len(errorMsg) == 0 {
 		return nil
 	}
@@ -238,7 +241,7 @@ func (p Processor) readDefaultZip(defaultZipDir string, env ConfigEnv) error {
 		return errors.New("解压文件错误" + err.Error())
 	}
 
-	targetCopyPath := filepath.Join(env.EnvTargetPath, env.EnvCode)
+	targetCopyPath := filepath.Join(env.EnvSourcePath, env.EnvCode)
 
 	_, err = p.FP.Copy(envName, targetCopyPath, true)
 	if err != nil {
@@ -254,7 +257,7 @@ func (p Processor) createEnvs() error {
 
 	for _, config := range p.AllConfigs.ConfigEnvs {
 		//_, _ = cpb.Printf("\n config env:    %s", config.PrintString())
-		placeholder := config.EnvTargetPath
+		placeholder := filepath.Join(config.EnvTargetPath, config.EnvCode)
 
 		for _, ec := range config.EnvConfig {
 			//_, _ = cpb.Printf("\n env:    %s", config.PrintString())
@@ -296,6 +299,8 @@ func (p Processor) createEnvs() error {
 			}
 		}
 	}
+
+	fmt.Println()
 
 	return nil
 }
