@@ -3,7 +3,6 @@ package args_ask
 import (
 	"auto_dev_env/src/platform"
 	"bufio"
-	"fmt"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
 	"log"
@@ -88,11 +87,6 @@ func findEnvs() []string {
 	// 检查读取过程中是否发生错误
 	if err := scanner.Err(); err != nil {
 		log.Fatalf("error reading file: %v", err)
-	}
-
-	// 输出每一行的内容
-	for _, line := range lines {
-		fmt.Println(line)
 	}
 
 	return lines
