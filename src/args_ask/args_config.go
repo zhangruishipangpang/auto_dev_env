@@ -1,10 +1,13 @@
 package args_ask
 
 import (
-	"auto_dev_env/src/common"
 	"auto_dev_env/src/platform"
+	"bufio"
+	"fmt"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
+	"log"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -65,15 +68,32 @@ func findEnvs() []string {
 
 	abPath := filepath.Join("./config", choosesPath)
 
-	processor := common.CommonFileProcessor{}
-
-	bytes, err := processor.ReadFile(abPath)
+	// 打开文件
+	file, err := os.Open(abPath)
 	if err != nil {
-		return nil
+		log.Fatalf("failed to open file: %v", err)
+	}
+	defer file.Close()
+
+	// 创建一个新的缓冲区读取器
+	scanner := bufio.NewScanner(file)
+
+	// 按行读取文件内容
+	var lines []string
+	for scanner.Scan() {
+		line := scanner.Text()
+		lines = append(lines, line)
 	}
 
-	// 使用换行符分割字符串
-	lines := strings.Split(string(bytes), "\n")
+	// 检查读取过程中是否发生错误
+	if err := scanner.Err(); err != nil {
+		log.Fatalf("error reading file: %v", err)
+	}
+
+	// 输出每一行的内容
+	for _, line := range lines {
+		fmt.Println(line)
+	}
 
 	return lines
 }

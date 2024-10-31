@@ -19,7 +19,7 @@
         {
           "key" : "JAVA_HOME",
           "value" : "$",
-          "cover" : true,
+          "cover" : false,
           "suffix_path" : ["bin"],
           "append_path" : true
         }
@@ -42,14 +42,14 @@
         {
           "name" : "settings.xml",
           "type" : "file",
-          "path" : "$config/settings.xml"
+          "path" : "$conf/settings.xml"
         }
       ],
       "env_config" : [
         {
           "key" : "MAVEN_HOME",
           "value" : "$",
-          "cover" : true,
+          "cover" : false,
           "suffix_path" : ["bin"],
           "append_path" : true
         }
