@@ -129,7 +129,7 @@ func (c CommonFileProcessor) UnZip(src, target string) error {
 
 func (c CommonFileProcessor) Copy(sourcePath string, targetPath string, del bool) (bool, error) {
 
-	_, _ = cpf.Printf("\n 开始复制文件: [%s] \n", sourcePath)
+	_, _ = cpf.Printf(" 开始复制文件: [%s] \n", sourcePath)
 
 	bar := util.GetProgressBar(" Copy", 3)
 

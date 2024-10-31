@@ -123,7 +123,7 @@ func (p Processor) checkAndCopy() error {
 	defaultZipDir := p.AllConfigs.DefaultZipDir
 
 	for _, config := range p.AllConfigs.ConfigEnvs {
-		_, _ = cpb.Printf("\n config -> %s", config.PrintString())
+		//_, _ = cpb.Printf("\n config -> %s", config.PrintString())
 
 		envCode := config.EnvCode
 		sourcePath := filepath.Join(config.EnvSourcePath, envCode)
@@ -142,7 +142,7 @@ func (p Processor) checkAndCopy() error {
 
 		// check
 		for _, checkSource := range config.EnvSourceCheck {
-			_, _ = cpb.Printf("\n check source: %s", config.PrintString())
+			//_, _ = cpb.Printf("\n check source: %s", config.PrintString())
 
 			name := checkSource.Name
 			path := checkSource.Path
@@ -161,7 +161,7 @@ func (p Processor) checkAndCopy() error {
 				errorMsg = append(errorMsg, errors.New("检查配置："+name+" "+string(fileType)+"不存在，请检查路径"))
 				continue
 			}
-			_, _ = cpb.Printf("\n ---->[%s]文件检查通过", path)
+			_, _ = cpb.Printf(" ---->[%s]文件检查通过", path)
 		}
 
 		// copy
@@ -170,7 +170,7 @@ func (p Processor) checkAndCopy() error {
 		}
 
 		if targetPath == "" || targetPath == sourcePath {
-			_, _ = cpb.Printf("\n\n 无须copy")
+			_, _ = cpb.Printf("\n 无须copy")
 			continue
 		}
 
@@ -233,11 +233,11 @@ func (p Processor) createEnvs() error {
 	_, _ = cpf.Printf("\n\n 开始执行 createEnvs 节点 ")
 
 	for _, config := range p.AllConfigs.ConfigEnvs {
-		_, _ = cpb.Printf("\n config env:    %s", config.PrintString())
+		//_, _ = cpb.Printf("\n config env:    %s", config.PrintString())
 		placeholder := config.EnvTargetPath
 
 		for _, ec := range config.EnvConfig {
-			_, _ = cpb.Printf("\n env:    %s", config.PrintString())
+			//_, _ = cpb.Printf("\n env:    %s", config.PrintString())
 
 			existEnv := p.CP.GetEnv(ec.Key)
 
@@ -287,6 +287,7 @@ func (p Processor) addPaths() error {
 	needAddPaths := getNeedAddPaths()
 
 	if needAddPaths == nil {
+		_, _ = cpf.Printf("\n 没有需要配置 path 的变量 ")
 		return nil
 	}
 
@@ -306,5 +307,7 @@ func (p Processor) addPaths() error {
 	if err != nil {
 		return err
 	}
+
+	_, _ = cpf.Printf(" 执行 addPaths 节点完成 ")
 	return nil
 }
