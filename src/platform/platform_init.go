@@ -18,7 +18,6 @@ func init() {
 
 func defaultPlatform() {
 	OsStore = append(OsStore, "windows")
-	OsStore = append(OsStore, "linux")
 	Register("windows", func() ProcessorPlatform {
 		return ProcessorPlatform{
 			OsName: "windows",
