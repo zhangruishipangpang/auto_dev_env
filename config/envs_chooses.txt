@@ -1,2 +1,4 @@
 jdk
 maven
+nvm
+ffmpeg
