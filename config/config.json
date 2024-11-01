@@ -54,6 +54,36 @@
           "append_path" : true
         }
       ]
+    },
+
+    {
+      "env_name": "nvm环境",
+      "env_code": "nvm",
+      "env_source_path": "./source",
+      "env_target_path": "./source",
+      "use_default": true,
+      "del_source": false,
+      "env_source_check": [
+        {
+          "name" : "settings.xml",
+          "type" : "file",
+          "path" : "$nvm.exe"
+        }
+      ],
+      "env_config" : [
+        {
+          "key" : "NVM_HOME",
+          "value" : "$",
+          "cover" : false,
+          "append_path" : false
+        },
+        {
+          "key" : "NVM_SYMLINK",
+          "value" : "$symlink",
+          "cover" : false,
+          "append_path" : false
+        }
+      ]
     }
   ]
 }
