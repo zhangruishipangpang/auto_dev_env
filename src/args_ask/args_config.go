@@ -22,8 +22,9 @@ var qs = []*survey.Question{
 	{
 		Name: "OsName",
 		Prompt: &survey.Select{
-			Message: "选择 os ?",
+			Message: "选择 os ? (默认当前系统)",
 			Options: platform.OsStore,
+			Default: util.GetCurrentOs(),
 		},
 		Validate: survey.Required,
 	},

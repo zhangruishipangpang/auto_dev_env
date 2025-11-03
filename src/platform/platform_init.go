@@ -2,6 +2,7 @@ package platform
 
 import (
 	"auto_dev_env/src/common"
+	"auto_dev_env/src/linux"
 	"auto_dev_env/src/mac"
 	"auto_dev_env/src/windows"
 	"github.com/fatih/color"
@@ -15,6 +16,7 @@ func init() {
 	//_, _ = cpg.Println("\n platform init")
 	defaultPlatform()
 	macPlatform()
+	linuxPlatform()
 }
 
 func defaultPlatform() {
@@ -37,6 +39,18 @@ func macPlatform() {
 			CP:     mac.MacCmd{},
 			FP:     common.CommonFileProcessor{},
 			OG:     mac.MacGeneral{},
+		}
+	})
+}
+
+func linuxPlatform() {
+	OsStore = append(OsStore, "linux")
+	Register("linux", func() ProcessorPlatform {
+		return ProcessorPlatform{
+			OsName: "linux",
+			CP:     mac.MacCmd{}, // 使用bash
+			FP:     common.CommonFileProcessor{},
+			OG:     linux.LinuxGeneral{},
 		}
 	})
 }

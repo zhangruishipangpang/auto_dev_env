@@ -14,7 +14,7 @@ func main() {
 
 	util.Info("======= 开发环境配置工具 =======")
 	util.Info("Version: 1.0.0")
-	util.Info("支持: Windows, macOS")
+	util.Info("支持: Windows, macOS, Linux")
 	util.Info("")
 
 	util.Info("开始获取用户配置...")

@@ -118,7 +118,10 @@ func (c CommonFileProcessor) UnZip(src, target string) error {
 		bar.Add(1)
 	}
 
-	bar.Finish()
+	err2 := bar.Finish()
+	if err2 != nil {
+		return err2
+	}
 	fmt.Println(" finish.")
 
 	return nil
