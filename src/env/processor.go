@@ -7,14 +7,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/fatih/color"
 	"path/filepath"
 	"strings"
-)
 
-var cpf = color.New(color.FgBlue).Add(color.Bold)
-var cpb = color.New(color.FgCyan)
-var cpr = color.New(color.BgRed).Add(color.Bold).Add(color.Underline)
+	_ "github.com/fatih/color"
+)
 
 // Processor 环境处理器
 // 该处理包含了命令处理器与文件处理器，对环境变量的处理操作都在该结构体中实现
@@ -129,38 +126,49 @@ func readConfig(configPath string, interestedEnv []string, fp inter.FileProcesso
 	return config0
 }
 
+// Process 处理环境变量配置，包含进度反馈
 func (p Processor) Process() {
+	// 初始化日志系统
+	util.InitLogger(util.LogLevelDebug)
 
-	err := p.checkAndCopy()
-	if err != nil {
-		_, _ = cpr.Println("\n " + err.Error())
-		return
+	// 定义处理步骤
+	steps := []struct {
+		name string
+		fn   func() error
+	}{
+		{"检查文件", p.checkAndCopy},
+		{"创建环境变量", p.createEnvs},
+		{"添加路径", p.addPaths},
 	}
 
-	err = p.createEnvs()
-	if err != nil {
-		_, _ = cpr.Println("\n " + err.Error())
-		return
+	util.Info("开始环境变量配置...")
+	util.Info("操作系统: %s", p.OsName)
+
+	// 执行所有步骤并显示进度
+	for i, step := range steps {
+		util.StepProgress(i+1, len(steps), step.name)
+
+		if err := step.fn(); err != nil {
+			util.Error("步骤 '%s' 执行失败: %v", step.name, err)
+			return
+		}
+
+		util.Info("✓ 步骤 '%s' 执行完成", step.name)
 	}
 
-	err = p.addPaths()
-	if err != nil {
-		_, _ = cpr.Println("\n " + err.Error())
-		return
-	}
+	util.Info("\n🎉 环境变量配置全部完成！")
 }
 
-// check 检查文件是否齐全
+// checkAndCopy 检查文件是否齐全并复制
 func (p Processor) checkAndCopy() error {
-
-	//_, _ = cpf.Printf("\n\n 开始执行 checkAndCopy 节点 ")
-
 	var errorMsg []error
-
 	defaultZipDir := p.AllConfigs.DefaultZipDir
 
+	util.Debug("默认解压目录: %s", defaultZipDir)
+	util.Debug("需要处理的环境配置数量: %d", len(p.AllConfigs.ConfigEnvs))
+
 	for _, config := range p.AllConfigs.ConfigEnvs {
-		//_, _ = cpb.Printf("\n config -> %s", config.PrintString())
+		util.Debug("处理配置: %s", config.EnvName)
 
 		// 检查是否需要配置该配置文件
 
@@ -196,11 +204,11 @@ func (p Processor) checkAndCopy() error {
 			}
 			if !exist {
 				checkSuccess = false
-				_, _ = cpb.Printf("\n ---->[%s]文件检查未通过", path)
-				errorMsg = append(errorMsg, errors.New("检查配置："+name+" "+string(fileType)+"不存在，请检查路径"))
+				util.Warn("---->[%s]文件检查未通过", path)
+				errorMsg = append(errorMsg, fmt.Errorf("检查配置：%s %s不存在，请检查路径", name, string(fileType)))
 				continue
 			}
-			_, _ = cpb.Printf("\n ===>[%s]文件检查通过", path)
+			util.Debug("===>[%s]文件检查通过", path)
 		}
 
 		// copy
@@ -209,18 +217,20 @@ func (p Processor) checkAndCopy() error {
 		}
 
 		if targetPath == "" || targetPath == sourcePath {
-			//_, _ = cpb.Printf("\n 无须copy")
+			util.Debug("目标路径为空或与源路径相同，无需复制")
 			continue
 		}
 
+		util.Info("复制文件: 从 %s 到 %s", sourcePath, targetPath)
 		copyR, err := p.FP.Copy(sourcePath, targetPath, config.DelSource)
 		if err != nil {
-			return err
+			return fmt.Errorf("复制文件失败: %w", err)
 		}
 
 		if !copyR {
-			return errors.New("----->[env.processor#check] file copy fail")
+			return errors.New("文件复制失败")
 		}
+		util.Info("✓ 文件复制成功")
 
 	}
 
@@ -235,7 +245,6 @@ func (p Processor) checkAndCopy() error {
 
 // readDefaultZip 读取默认的zip配置文件，解压到配置的env_source_path中
 func (p Processor) readDefaultZip(defaultZipDir string, env ConfigEnv) error {
-
 	if defaultZipDir == "" {
 		return errors.New("default_zip_dir 未配置")
 	}
@@ -243,38 +252,43 @@ func (p Processor) readDefaultZip(defaultZipDir string, env ConfigEnv) error {
 	envName := filepath.Join(defaultZipDir, env.EnvCode)
 	envZipName := envName + ".zip"
 
+	util.Info("查找默认配置包: %s", envZipName)
 	exist, err := p.FP.Exist(envZipName)
 	if err != nil {
 		return err
 	}
 
 	if !exist {
-		return errors.New(envZipName + " 不存在配置")
+		return fmt.Errorf("%s 不存在配置", envZipName)
 	}
 
-	_, _ = cpb.Printf("\n 查找到待解压文件：[%s]", envZipName)
+	util.Info("✓ 查找到待解压文件：[%s]", envZipName)
 
+	util.Info("开始解压文件...")
 	err = p.FP.UnZip(envZipName, defaultZipDir)
 	if err != nil {
-		return errors.New("解压文件错误" + err.Error())
+		return fmt.Errorf("解压文件错误: %w", err)
 	}
+	util.Info("✓ 文件解压成功")
 
 	targetCopyPath := filepath.Join(env.EnvSourcePath, env.EnvCode)
 
+	util.Info("复制解压后的文件到目标路径...")
 	_, err = p.FP.Copy(envName, targetCopyPath, true)
 	if err != nil {
-		return err
+		return fmt.Errorf("复制解压文件失败: %w", err)
 	}
+	util.Info("✓ 配置文件复制完成")
 
 	return nil
 }
 
+// createEnvs 创建环境变量
 func (p Processor) createEnvs() error {
-
-	//_, _ = cpf.Printf("\n\n 开始执行 createEnvs 节点 ")
+	util.Debug("开始创建环境变量...")
 
 	for _, config := range p.AllConfigs.ConfigEnvs {
-		//_, _ = cpb.Printf("\n config env:    %s", config.PrintString())
+		util.Debug("处理环境配置: %s", config.EnvName)
 		placeholder := filepath.Join(config.EnvTargetPath, config.EnvCode)
 
 		for _, ec := range config.EnvConfig {
@@ -284,9 +298,10 @@ func (p Processor) createEnvs() error {
 
 			if existEnv != "" {
 				if !ec.Cover {
-					_, _ = cpb.Printf("\n ===>变量[%s]已经存在，并且 cover=false，skip...", ec.Key)
+					util.Info("===>变量[%s]已经存在，并且 cover=false，跳过...", ec.Key)
 					continue
 				}
+				util.Warn("变量[%s]已存在，将被覆盖", ec.Key)
 			}
 
 			value := ec.Value
@@ -296,12 +311,13 @@ func (p Processor) createEnvs() error {
 				value = filepath.Join(placeholder, value[1:])
 			}
 
+			util.Info("设置环境变量: %s = %s", ec.Key, value)
 			err := p.CP.SetEnv(ec.Key, value)
 			if err != nil {
-				return err
+				return fmt.Errorf("设置环境变量失败: %w", err)
 			}
 
-			_, _ = cpb.Printf("\n ===>变量[%s]配置完成 ", ec.Key)
+			util.Info("✓ 变量[%s]配置完成", ec.Key)
 
 			// 如果需要添加path，则添加到待添加path列表
 			if ec.AppendPath {
@@ -323,22 +339,25 @@ func (p Processor) createEnvs() error {
 	return nil
 }
 
+// addPaths 添加路径到PATH环境变量
 func (p Processor) addPaths() error {
-
-	//_, _ = cpf.Printf("\n\n 开始执行 addPaths 节点 ")
+	util.Debug("开始添加路径到PATH...")
 
 	needAddPaths := getNeedAddPaths()
 
-	if needAddPaths == nil {
-		_, _ = cpf.Printf("\n ===> 不需要配置 path ")
+	if needAddPaths == nil || len(needAddPaths) == 0 {
+		util.Info("===> 不需要配置 path")
 		return nil
 	}
 
+	util.Info("需要添加的路径数量: %d", len(needAddPaths))
+
 	path := p.CP.GetEnv("PATH")
 
+	util.Info("备份当前PATH环境变量")
 	err := p.CP.SetEnv("PATH_BAK", path)
 	if err != nil {
-		return err
+		return fmt.Errorf("备份PATH失败: %w", err)
 	}
 
 	for _, newPath := range needAddPaths {
@@ -351,7 +370,7 @@ func (p Processor) addPaths() error {
 		return err
 	}
 
-	_, _ = cpb.Printf("\n ===> path 配置完成，已配置环境变量为：%s", strings.Join(needAddPaths, ","))
+	util.Info("===> path 配置完成，已配置的路径：%s", strings.Join(needAddPaths, ","))
 
 	//_, _ = cpf.Printf(" 执行 addPaths 节点完成 ")
 	return nil

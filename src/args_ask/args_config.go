@@ -2,16 +2,14 @@ package args_ask
 
 import (
 	"auto_dev_env/src/platform"
+	"auto_dev_env/src/util"
 	"bufio"
-	"github.com/AlecAivazis/survey/v2"
-	"github.com/fatih/color"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
-)
 
-var cpy = color.New(color.FgYellow).Add(color.Bold)
+	"github.com/AlecAivazis/survey/v2"
+)
 
 type Args struct {
 	OsName         string   `survey:"OsName"`         // 操作系统类型
@@ -44,7 +42,6 @@ var qs = []*survey.Question{
 }
 
 func Ask() (Args, error) {
-
 	answers := Args{}
 
 	// perform the questions
@@ -53,10 +50,10 @@ func Ask() (Args, error) {
 		return Args{}, err
 	}
 
-	cpy.Printf(" 待配置信息：  ")
-	cpy.Printf("\n         os    : %s  ", answers.OsName)
-	cpy.Printf("\n         config: %s  ", answers.ConfigFilePath)
-	cpy.Printf("\n         envs  : %s  ", strings.Join(answers.Envs, ","))
+	util.Info(" 待配置信息：  ")
+	util.Info("         os    : %s  ", answers.OsName)
+	util.Info("         config: %s  ", answers.ConfigFilePath)
+	util.Info("         envs  : %s  ", strings.Join(answers.Envs, ","))
 
 	return answers, nil
 
@@ -66,11 +63,14 @@ func findEnvs() []string {
 	choosesPath := "envs_chooses.txt"
 
 	abPath := filepath.Join("./config", choosesPath)
+	util.Debug("查找可选环境变量文件: %s", abPath)
 
 	// 打开文件
 	file, err := os.Open(abPath)
 	if err != nil {
-		log.Fatalf("failed to open file: %v", err)
+		util.Error("无法打开环境变量选择文件: %v", err)
+		util.Warn("使用空环境变量列表")
+		return []string{}
 	}
 	defer file.Close()
 
@@ -81,13 +81,18 @@ func findEnvs() []string {
 	var lines []string
 	for scanner.Scan() {
 		line := scanner.Text()
-		lines = append(lines, line)
+		if strings.TrimSpace(line) != "" {
+			lines = append(lines, line)
+		}
 	}
 
 	// 检查读取过程中是否发生错误
 	if err := scanner.Err(); err != nil {
-		log.Fatalf("error reading file: %v", err)
+		util.Error("读取环境变量文件时出错: %v", err)
+		util.Warn("使用已读取的环境变量列表")
 	}
+
+	util.Debug("成功读取 %d 个可选环境变量", len(lines))
 
 	return lines
 }
